@@ -1,0 +1,1269 @@
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="favicon.png" type="image/x-icon">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    <title>Bible Ebook</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 20px;
+            background-color: #f2f2f2;
+            color: #333;
+            line-height: 1.6;
+            /* Improved readability with increased line height */
+        }
+
+        h1,
+        h2,
+        h3 {
+            color: #3498db;
+            /* Accent color for headings */
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            /* Adjusted font size for headings */
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 1.8rem;
+            margin-bottom: 10px;
+        }
+
+        p {
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+        }
+
+        #toolbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background-color: #292b2c;
+            padding: 10px;
+            border-radius: 0;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+            z-index: 100;
+            max-width: 100%;
+            box-sizing: border-box;
+            white-space: nowrap;
+        }
+
+        #toolbar button,
+        #toolbar label {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #444;
+            transition: background-color 0.3s;
+        }
+
+        #toolbar button:hover,
+        #toolbar label:hover {
+            background-color: #555;
+        }
+
+        #bible-content {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            line-height: 1.6;
+            transition: transform 0.3s;
+            transform-origin: top center;
+            /* Set the initial transform origin */
+            word-wrap: break-word;
+        }
+
+
+        /* New CSS styles */
+        .verse {
+            font-size: 20px;
+            /* Increase font size */
+            font-family: 'Times New Roman', Times, serif;
+            /* Change font family */
+            color: #333;
+            /* Default text color */
+        }
+
+        .title {
+            font-weight: bold;
+            font-size: 26px;
+            /* Increase font size */
+            color: #194664;
+            /* Title text color */
+        }
+
+        #loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+
+        .error {
+            color: red;
+        }
+
+        #doubleSpacing {
+            display: none;
+            /* Hide the default checkbox */
+        }
+
+        #doubleSpacingLabel {
+            padding: 10px;
+            cursor: pointer;
+            font-size: 14px;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            background-color: #777;
+            /* Default color for unselected state */
+            transition: background-color 0.3s;
+        }
+
+        #doubleSpacing:checked+#doubleSpacingLabel {
+            background-color: #4CAF50;
+            /* Color for selected state */
+        }
+
+        .TOCmain-menu.open {
+            right: 0;
+        }
+
+        /* Main menu styles */
+        .TOCmain-menu {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            position: fixed;
+            top: 0;
+            right: -300px;
+            width: 300px;
+            height: 100%;
+            background: #2a2a2a;
+            /* Darker background color */
+            transition: 0.5s;
+            z-index: 101;
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.8);
+            overflow-y: auto;
+        }
+
+        /* Close button styles */
+        .TOCclosebtn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 24px;
+            color: #ffffff;
+            /* Light text color */
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        /* Menu header styles */
+        .TOCmenu-header {
+            padding: 20px;
+            text-align: center;
+            background: linear-gradient(135deg, #444, #2a2a2a);
+            /* Darker accent color */
+            color: #ffffff;
+            /* Light text color */
+            font-size: 1.8rem;
+            font-weight: bold;
+            border-bottom: 2px solid #333;
+            /* Darker border color */
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        /* Submenu styles */
+        .TOCsubmenu {
+            padding: 20px;
+            background-color: #2a2a2a;
+            /* Darker background color */
+        }
+
+        /* Submenu link styles */
+        .TOCsubmenu a {
+            display: block;
+            margin-bottom: 10px;
+            padding: 15px;
+            color: #ffffff;
+            /* Light text color */
+            text-decoration: none;
+            font-size: 1.4rem;
+            transition: background-color 0.3s, color 0.3s;
+            border-radius: 10px;
+            /* Rounded corners */
+            background: #444;
+            /* Darker accent color */
+            text-align: center;
+        }
+
+        .TOCsubmenu a:hover {
+            background-color: #333;
+            /* Darker background color on hover */
+        }
+
+        /* Styled Zoom Input */
+        #zoom-input {
+            padding: 10px;
+            width: 80px;
+            text-align: center;
+            font-size: 14px;
+            border: 2px solid #555;
+            ;
+            border-radius: 5px;
+            color: #ffffff;
+            background-color: rgba(255, 255, 255, .0);
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+
+        #zoom-input:focus {
+            outline: none;
+            border-color: #4CAF50;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Tooltip styles */
+        [data-tooltip] {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+        }
+
+        [data-tooltip]:before {
+            content: attr(data-tooltip);
+            position: absolute;
+            top: 125%;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 8px;
+            background-color: #333;
+            color: #fff;
+            border-radius: 5px;
+            font-size: 14px;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 1;
+        }
+
+        [data-tooltip]:hover:before {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .submenu a i {
+            margin-right: 10px;
+            font-size: 1.2rem;
+        }
+
+
+        /* Loading Overlay */
+        #loadingOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 1);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+        }
+
+        /* Loading Logo */
+        #loadingLogo {
+            width: 200px;
+            /* Adjust size as needed */
+            height: auto;
+            margin-bottom: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        /* Loading Spinner Container */
+        .spinnerContainer {
+            position: relative;
+            width: 120px;
+            height: 120px;
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 80px;
+            height: 80px;
+            margin: -40px 0 0 -40px;
+            border-radius: 50%;
+            border: 8px solid transparent;
+            border-top-color: #3498db;
+            /* Blue */
+            animation: spin 1s linear infinite;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Loading Message */
+        #loadingMessage {
+            text-align: center;
+            font-size: 24px;
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+
+        .zoom-button {
+            opacity: 1;
+        }
+
+
+        /* Hide zoom buttons on smaller screens (phones) */
+        @media screen and (max-width: 768px) {
+
+            .zoom-input,
+            .zoom-button {
+                display: none;
+            }
+        }
+
+        .play-button {
+            background: linear-gradient(to right, #3498db, #2980b9);
+            border: none;
+            color: white;
+            padding: 6px;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            margin-left: 6px;
+            cursor: pointer;
+            border-radius: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            outline: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .play-button:hover {
+            background: linear-gradient(to right, #2980b9, #3498db);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .play-button::before {
+            content: "";
+            background: rgba(255, 255, 255, 0.6);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        .play-button:hover::before {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .play-button span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .play-button svg {
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        .stop-button {
+            background: linear-gradient(to right, #1e1e1e, #000000);
+            border: none;
+            color: white;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 12px;
+            padding: 6px;
+            margin-left: 6px;
+            cursor: pointer;
+            border-radius: 24px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+            outline: none;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .stop-button:hover {
+            background: linear-gradient(to right, #909090, #636363);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .stop-button::before {
+            content: "";
+            background: rgba(255, 255, 255, 0.6);
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 300%;
+            height: 300%;
+            border-radius: 50%;
+            transition: all 0.4s ease;
+            opacity: 0;
+            transform: translate(-50%, -50%) scale(0);
+        }
+
+        .stop-button:hover::before {
+            opacity: 1;
+            transform: translate(-50%, -50%) scale(1);
+        }
+
+        .stop-button span {
+            position: relative;
+            z-index: 2;
+        }
+
+        .stop-button svg {
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+
+        #font-size-btn {
+            padding: 15px;
+            cursor: pointer;
+            font-size: 18px;
+            border: none;
+            border-radius: 50px;
+            background-color: #333;
+            background-color: #444;
+            transition: background-color 0.3s, transform 0.3s;
+        }
+
+        #font-size-btn:hover {
+            background-color: #2980b9;
+            transform: scale(1.1);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        #font-size-options {
+            display: flex;
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #fff;
+            padding: 15px;
+            border-radius: 15px;
+            z-index: 10;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        #font-size-container:hover #font-size-options {
+            opacity: 1;
+            visibility: visible;
+            top: 70px;
+        }
+
+        #font-size-options button {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 50px;
+            height: 50px;
+            margin: 0 5px;
+            color: #333;
+            background-color: #f8f8f8;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #font-size-options label {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 30px;
+            height: 30px;
+            margin: 0 5px;
+            color: #333;
+            background-color: #f8f8f8;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        #font-size-options button:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #font-size-options label:hover {
+            background-color: #e0e0e0;
+            transform: translateY(-3px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        #font-size-options label.selected {
+            background-color: #3498db;
+            color: #fff;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+        }
+
+        #font-size-options button.selected {
+            background-color: #3498db;
+            color: #fff;
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+        }
+
+        #font-size-container {
+            position: absolute;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .copyright-notice {
+            font-size: 0.8rem;
+            color: #666;
+            margin-top: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<div id="loadingOverlay">
+    <img id="loadingLogo" src="favicon.png" alt="Logo">
+    <div class="spinnerContainer">
+        <div class="spinner"></div>
+    </div>
+    <br>
+    <div id="loadingMessage">Loading...</div>
+</div>
+
+<body>
+    <br>
+    <br>
+    <br>
+    <br>
+    <div id="toolbar">
+        <div>
+            <span class="zoom-button">
+                <button onclick="zoom('in')" data-tooltip="Zoom In"><i class="fas fa-search-plus"></i></button>
+                <button onclick="zoom('out')" data-tooltip="Zoom Out"><i class="fas fa-search-minus"></i></button>
+            </span>
+            <!-- Styled Zoom Input -->
+            <label class="zoom-input" style="  background-color: rgba(255, 255, 255, .0);" data-tooltip="Zoom">
+                Zoom:
+                <input type="text" id="zoom-input" value="100%" onchange="changeZoom()" class="zoom-input">
+            </label>
+
+            <button onclick="toggleTOCMenu()" data-tooltip="Table of Contents"><i class="fas fa-book"></i></button>
+        </div>
+
+        <div id="font-size-container">
+            <button id="font-size-btn"><i class="fas fa-text-height"></i></button>
+            <div id="font-size-options">
+                <button data-size="small"><i class="fas fa-font fa-xs"></i></button>
+                <button data-size="medium" class="selected"><i class="fas fa-font fa-lg"></i></button>
+                <button data-size="large"><i class="fas fa-font fa-2x"></i></button>
+                <input type="checkbox" id="doubleSpacing">
+                <label for="doubleSpacing" id="doubleSpacingLabel" data-tooltip="Toggle Double Line Spacing">
+                    <i class="fas fa-arrows-alt-v"></i>
+                </label>
+            </div>
+        </div>
+    </div>
+
+    <div id="bible-content"></div>
+    <nav class="main-menu" id="main-menu" style="overflow-y:auto;">
+        <a href="javascript:void(0)" class="closebtn" onclick="toggleMenu()">&times;</a>
+        <a href="https://www.irongripministries.org/">IGM</a>
+        <a href="https://www.irongripministries.org/Mentoring">Mentoring</a>
+        <a href="https://www.irongripministries.org/Rebuilt_Man">Rebuilt Man</a>
+        <a href="https://www.irongripministries.org//Restored">Restored</a>
+        <a href="https://www.irongripministries.org/The_Execution">The Execution</a>
+        <a href="https://www.irongripministries.org/You_and_the_Big_Guy">You & The Big Guy (Book)</a>
+        <a href="https://www.irongripministries.org/Bible">God's words to us. (Bible) <strong> Listen or Read
+            </strong></a>
+        <a href="https://www.irongripministries.org/Support">Support</a>
+        <a href="https://www.irongripministries.org/Contact">Contact</a>
+        <a href="https://www.irongripministries.org/Credits">Credits</a>
+    </nav>
+    <!-- Side Menu -->
+    <div class="TOCmain-menu" style="overflow-y: auto;">
+        <span class="TOCclosebtn" onclick="toggleTOCMenu()">&times;</span>
+        <div class="TOCmenu-header">Table of Contents</div>
+        <div class="TOCsubmenu">
+            <a href="#genesis" onclick="scrollToBook('genesis')"><i></i>&nbsp; Genesis</a>
+            <a href="#exodus" onclick="scrollToBook('exodus')"><i></i>&nbsp;Exodus</a>
+            <a href="#leviticus" onclick="scrollToBook('leviticus')"><i></i>&nbsp;Leviticus</a>
+            <a href="#numbers" onclick="scrollToBook('numbers')"><i></i>&nbsp;Numbers</a>
+            <a href="#deuteronomy" onclick="scrollToBook('deuteronomy')"><i></i>&nbsp;Deuteronomy</a>
+            <a href="#joshua" onclick="scrollToBook('joshua')"><i></i>&nbsp;Joshua</a>
+            <a href="#judges" onclick="scrollToBook('judges')"><i></i>&nbsp;Judges</a>
+            <a href="#ruth" onclick="scrollToBook('ruth')"><i></i>&nbsp;Ruth</a>
+            <a href="#1-samuel" onclick="scrollToBook('1-samuel')"><i></i>&nbsp;1 Samuel</a>
+            <a href="#2-samuel" onclick="scrollToBook('2-samuel')"><i></i>&nbsp;2 Samuel</a>
+            <a href="#1-kings" onclick="scrollToBook('1-kings')"><i></i>&nbsp;1 Kings</a>
+            <a href="#2-kings" onclick="scrollToBook('2-kings')"><i></i>&nbsp;2 Kings</a>
+            <a href="#1-chronicles" onclick="scrollToBook('1-chronicles')"><i></i>&nbsp;1
+                Chronicles</a>
+            <a href="#2-chronicles" onclick="scrollToBook('2-chronicles')"><i></i>&nbsp;2
+                Chronicles</a>
+            <a href="#ezra" onclick="scrollToBook('ezra')"><i></i>&nbsp;Ezra</a>
+            <a href="#nehemiah" onclick="scrollToBook('nehemiah')"><i></i>&nbsp;Nehemiah</a>
+            <a href="#esther" onclick="scrollToBook('esther')"><i></i>&nbsp;Esther</a>
+            <a href="#job" onclick="scrollToBook('job')"><i></i>&nbsp;Job</a>
+            <a href="#psalm" onclick="scrollToBook('psalm')"><i></i>&nbsp;Psalm</a>
+            <a href="#proverbs" onclick="scrollToBook('proverbs')"><i></i>&nbsp;Proverbs</a>
+            <a href="#ecclesiastes" onclick="scrollToBook('ecclesiastes')"><i></i>&nbsp;Ecclesiastes</a>
+            <a href="#song-of-solomon" onclick="scrollToBook('song-of-solomon')"><i></i>&nbsp;Song
+                of
+                Solomon</a>
+            <a href="#isaiah" onclick="scrollToBook('isaiah')"><i></i>&nbsp;Isaiah</a>
+            <a href="#jeremiah" onclick="scrollToBook('jeremiah')"><i></i>&nbsp;Jeremiah</a>
+            <a href="#lamentations" onclick="scrollToBook('lamentations')"><i></i>&nbsp;Lamentations</a>
+            <a href="#ezekiel" onclick="scrollToBook('ezekiel')"><i></i>&nbsp;Ezekiel</a>
+            <a href="#daniel" onclick="scrollToBook('daniel')"><i></i>&nbsp;Daniel</a>
+            <a href="#hosea" onclick="scrollToBook('hosea')"><i></i>&nbsp;Hosea</a>
+            <a href="#joel" onclick="scrollToBook('joel')"><i></i>&nbsp;Joel</a>
+            <a href="#amos" onclick="scrollToBook('amos')"><i></i>&nbsp;Amos</a>
+            <a href="#obadiah" onclick="scrollToBook('obadiah')"><i></i>&nbsp;Obadiah</a>
+            <a href="#jonah" onclick="scrollToBook('jonah')"><i></i>&nbsp;Jonah</a>
+            <a href="#micah" onclick="scrollToBook('micah')"><i></i>&nbsp;Micah</a>
+            <a href="#nahum" onclick="scrollToBook('nahum')"><i></i>&nbsp;Nahum</a>
+            <a href="#habakkuk" onclick="scrollToBook('habakkuk')"><i></i>&nbsp;Habakkuk</a>
+            <a href="#zephaniah" onclick="scrollToBook('zephaniah')"><i></i>&nbsp;Zephaniah</a>
+            <a href="#haggai" onclick="scrollToBook('haggai')"><i></i>&nbsp;Haggai</a>
+            <a href="#zechariah" onclick="scrollToBook('zechariah')"><i c></i>&nbsp;Zechariah</a>
+            <a href="#malachi" onclick="scrollToBook('malachi')"><i></i>&nbsp;Malachi</a>
+            <a href="#matthew" onclick="scrollToBook('matthew')"><i></i>Matthew</a>
+            <a href="#mark" onclick="scrollToBook('mark')"><i></i>&nbsp;Mark</a>
+            <a href="#luke" onclick="scrollToBook('luke')"><i></i>&nbsp;Luke</a>
+            <a href="#john" onclick="scrollToBook('john')"><i></i>&nbsp;John</a>
+            <a href="#acts" onclick="scrollToBook('acts')"><i></i>&nbsp;Acts</a>
+            <a href="#romans" onclick="scrollToBook('romans')"><i></i>&nbsp;Romans</a>
+            <a href="#1-corinthians" onclick="scrollToBook('1-corinthians')"><i></i>&nbsp;1
+                Corinthians</a>
+            <a href="#2-corinthians" onclick="scrollToBook('2-corinthians')"><i></i>&nbsp;2
+                Corinthians</a>
+            <a href="#galatians" onclick="scrollToBook('galatians')"><i></i>&nbsp;Galatians</a>
+            <a href="#ephesians" onclick="scrollToBook('ephesians')"><i></i>&nbsp;Ephesians</a>
+            <a href="#philippians" onclick="scrollToBook('philippians')"><i></i>&nbsp;Philippians</a>
+            <a href="#colossians" onclick="scrollToBook('colossians')"><i></i>&nbsp;Colossians</a>
+            <a href="#1-thessalonians" onclick="scrollToBook('1-thessalonians')"><i></i>&nbsp;1
+                Thessalonians</a>
+            <a href="#2-thessalonians" onclick="scrollToBook('2-thessalonians')"><i></i>&nbsp;2
+                Thessalonians</a>
+            <a href="#1-timothy" onclick="scrollToBook('1-timothy')"><i></i>&nbsp;1
+                Timothy</a>
+            <a href="#2-timothy" onclick="scrollToBook('2-timothy')"><i></i>&nbsp;2
+                Timothy</a>
+            <a href="#titus" onclick="scrollToBook('titus')"><i></i>&nbsp;Titus</a>
+            <a href="#philemon" onclick="scrollToBook('philemon')"><i></i>&nbsp;Philemon</a>
+            <a href="#hebrews" onclick="scrollToBook('hebrews')"><i></i>&nbsp;Hebrews</a>
+            <a href="#james" onclick="scrollToBook('james')"><i></i>&nbsp;James</a>
+            <a href="#1-peter" onclick="scrollToBook('1-peter')"><i></i>&nbsp;1 Peter</a>
+            <a href="#2-peter" onclick="scrollToBook('2-peter')"><i></i>&nbsp;2 Peter</a>
+            <a href="#1-john" onclick="scrollToBook('1-john')"><i></i>&nbsp;1 John</a>
+            <a href="#2-john" onclick="scrollToBook('2-john')"><i></i>&nbsp;2 John</a>
+            <a href="#3-john" onclick="scrollToBook('3-john')"><i></i>&nbsp;3 John</a>
+            <a href="#jude" onclick="scrollToBook('jude')"><i></i>Jude</a>
+            <a href="#revelation" onclick="scrollToBook('revelation')"><i></i>&nbsp;Revelation</a>
+        </div>
+        <script>
+            document.addEventListener('DOMContentLoaded', async function () {
+                const bibleContent = document.getElementById('bible-content');
+                const loadingIndicator = document.getElementById('loadingOverlay');  // The loading spinner
+                let fontSize = getCookie('fontSize') || '1.4rem';  // Default font size (medium) or from cookie
+                let isDoubleSpacing = getCookie('doubleSpacing') === 'true';  // Double spacing from cookie
+
+                // Function to load and display Bible content
+                async function loadText(filePath) {
+                    const response = await fetch(filePath);
+                    if (!response.ok) {
+                        throw new Error(`Failed to load the Bible text. (${response.status} ${response.statusText})`);
+                    }
+                    return response.text();
+                }
+
+                const filePath = 'brbU.txt';
+
+                try {
+                    // Load the Bible content
+                    const text = await loadText(filePath);
+
+                    // Hide the loading overlay once the content is loaded
+                    loadingIndicator.style.display = 'none';
+
+                    // Display the Bible content with the selected font size and line spacing
+                    displayBible(text);
+
+                    // Set up font size buttons and double spacing after the content is loaded
+                    setupFontSizeButtons(text);
+                    setupDoubleSpacingToggle(text);
+
+                } catch (error) {
+                    // Handle errors
+                    showError(error.message, bibleContent);
+                }
+
+                // Function to set up font size buttons
+                function setupFontSizeButtons(text) {
+                    const fontSizeButtons = document.querySelectorAll('#font-size-options button');
+
+                    // Clear selected classes from all buttons first
+                    fontSizeButtons.forEach(button => button.classList.remove('selected'));
+
+                    fontSizeButtons.forEach(button => {
+                        button.addEventListener('click', function () {
+                            // Remove 'selected' class from all buttons
+                            fontSizeButtons.forEach(btn => btn.classList.remove('selected'));
+
+                            // Add 'selected' class to the clicked button
+                            button.classList.add('selected');
+
+                            // Get the new font size based on the button clicked
+                            const size = button.getAttribute('data-size');
+
+                            // Update the font size, set a cookie, and reload the content
+                            changeFontSize(size, text);
+                        });
+                    });
+
+                    // Find the button corresponding to the saved font size and mark it as selected
+                    const selectedButton = document.querySelector(`#font-size-options button[data-size="${getFontSizeFromRem(fontSize)}"]`);
+                    if (selectedButton) {
+                        selectedButton.classList.add('selected');
+                    }
+                }
+
+                // Modified changeFontSize function
+                function changeFontSize(size, text) {
+                    const bibleContent = document.getElementById('bible-content');
+                    const currentScrollPercentage = getCurrentScrollPercentage();
+
+                    if (size === 'small') {
+                        fontSize = '1rem';
+                    } else if (size === 'medium') {
+                        fontSize = '1.4rem';
+                    } else if (size === 'large') {
+                        fontSize = '1.8rem';
+                    }
+
+                    // Set font size cookie to remember user preference
+                    setCookie('fontSize', fontSize, 30);
+
+                    // Show the loading spinner
+                    const loadingIndicator = document.getElementById('loadingOverlay');
+                    loadingIndicator.style.display = 'flex';
+
+                    // Simulate a small delay to show the spinner before content reload
+                    setTimeout(() => {
+                        // Re-display the Bible content with the new font size
+                        displayBible(text);
+
+                        // Restore scroll position after content is reloaded
+                        restoreScrollPosition(currentScrollPercentage);
+
+                        // Hide the loading spinner
+                        loadingIndicator.style.display = 'none';
+                    }, 500);  // 0.5 second delay for demonstration
+                }
+
+                // Function to get current scroll percentage
+                function getCurrentScrollPercentage() {
+                    const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+                    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    return scrollTop / scrollHeight;
+                }
+
+                // Function to restore scroll position
+                function restoreScrollPosition(scrollPercentage) {
+                    const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+                    window.scrollTo(0, scrollHeight * scrollPercentage);
+                }
+
+                // Function to set up double line spacing toggle
+                function setupDoubleSpacingToggle(text) {
+                    const doubleSpacingCheckbox = document.getElementById('doubleSpacing');
+                    doubleSpacingCheckbox.checked = isDoubleSpacing;  // Set initial state based on cookie
+
+                    doubleSpacingCheckbox.addEventListener('change', function () {
+                        isDoubleSpacing = doubleSpacingCheckbox.checked;
+
+                        // Set double spacing cookie to remember user preference
+                        setCookie('doubleSpacing', isDoubleSpacing, 30);
+
+                        // Reload the Bible content to apply line spacing
+                        displayBible(text);
+                    });
+                }
+
+                // Function to display the Bible content with the applied font size and line spacing
+                function displayBible(text) {
+                    // Clear previous content and show loading animation
+                    bibleContent.innerHTML = '';
+                    // Add the copyright notice
+                    const copyrightNotice = document.createElement('p');
+                    copyrightNotice.innerHTML = 'The Holy Bible, Berean Reader\'s Bible, Copyright © 2020 by Bible Hub. All Rights Reserved Worldwide. Free Licensing for use in Websites, Apps, Software, and Audio: <a target="_blank" href="http://berean.bible/licensing.htm">http://berean.bible/licensing.htm</a>';
+                    copyrightNotice.className = 'copyright-notice';  // Add this line to apply the new style
+                    bibleContent.appendChild(copyrightNotice);
+
+                    const verses = text.split('\n\n');
+
+                    let currentBook = '';
+                    let currentChapter = 0;
+
+                    verses.forEach((verse) => {
+                        const verseDiv = document.createElement('div');
+                        verseDiv.classList.add('verse');
+                        verseDiv.style.fontSize = fontSize;  // Apply selected font size
+                        verseDiv.style.lineHeight = isDoubleSpacing ? '3.2' : '1.6';  // Apply double line spacing if enabled
+                        let bookId = '';
+                        let bookId2 = '';
+
+                        // Check if the verse is a title
+                        if (isTitle(verse)) {
+                            verseDiv.classList.add('title');
+
+                            // Extract the book name and chapter number
+                            const match = verse.match(/^(\d*\s*[A-Za-z\s]+)\s(\d+)/);
+                            if (match) {
+                                const bookName = match[1].trim();
+                                const chapterNum = parseInt(match[2]);
+
+                                // Format book ID
+                                bookId = formatBookId(bookName, chapterNum);
+                                bookId2 = bookName.toLowerCase().replace(/\s+/g, '-');
+
+                                // Update current book and chapter
+                                currentBook = bookName;
+                                currentChapter = chapterNum;
+                            }
+                        }
+
+                        verseDiv.textContent = verse;
+                        bibleContent.appendChild(verseDiv);
+
+                        if (bookId2) {
+                            verseDiv.id = bookId2;
+                        }
+
+                        // Add play button if it's a new chapter
+                        if (bookId && currentBook && currentChapter > 0) {
+                            addPlayButton(verseDiv, bookId);  // Pass verseDiv as the container
+                        }
+                    });
+
+                    // Hide the loading spinner once content is loaded
+                    loadingIndicator.style.display = 'none';
+                }
+
+                // Helper functions for setting and getting cookies
+                function setCookie(name, value, days) {
+                    const d = new Date();
+                    d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                    const expires = "expires=" + d.toUTCString();
+                    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+                }
+
+                function getCookie(name) {
+                    const cname = name + "=";
+                    const decodedCookie = decodeURIComponent(document.cookie);
+                    const ca = decodedCookie.split(';');
+                    for (let i = 0; i < ca.length; i++) {
+                        let c = ca[i];
+                        while (c.charAt(0) === ' ') {
+                            c = c.substring(1);
+                        }
+                        if (c.indexOf(cname) === 0) {
+                            return c.substring(cname.length, c.length);
+                        }
+                    }
+                    return "";
+                }
+
+                // Helper to map the font size to button selection
+                function getFontSizeFromRem(fontSizeRem) {
+                    switch (fontSizeRem) {
+                        case '1rem':
+                            return 'small';
+                        case '1.4rem':
+                            return 'medium';
+                        case '1.8rem':
+                            return 'large';
+                        default:
+                            return 'medium';
+                    }
+                }
+            });
+
+
+            function scrollToBook(bookId) {
+                const element = document.getElementById(bookId);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+
+            function formatBookId(bookName, chapterNum) {
+                const firstLetterCapitalized = bookName.charAt(0).toUpperCase();
+                const remainingLetters = bookName.substring(1).toLowerCase();
+                const capitalizedBookName = firstLetterCapitalized + remainingLetters;
+                const firstThreeLetters = capitalizedBookName.substring(0, 3);
+                const chapterNumber = chapterNum.toString().padStart(3, '0');
+                return `${firstThreeLetters}_${chapterNumber}`;
+            }
+
+            function addPlayButton(container, bookId) {
+                const playButton = document.createElement('button');
+                playButton.innerHTML = '<i class="fas fa-play"></i>';
+                playButton.classList.add('play-button');
+
+                const stopButton = document.createElement('button');
+                stopButton.innerHTML = '<i class="fas fa-stop"></i>';
+                stopButton.classList.add('stop-button');
+                stopButton.style.display = 'none'; // Initially hide the stop button
+
+                let hideStopButtonTimeout;
+
+                // Event listener for mouseenter on play button
+                playButton.addEventListener('mouseenter', function () {
+                    playButton.style.transform = 'scale(1.1)';
+                    stopButton.style.display = 'inline-block';
+                    if (hideStopButtonTimeout) {
+                        clearTimeout(hideStopButtonTimeout);
+                    }
+                });
+
+                // Event listener for mouseleave on play button
+                playButton.addEventListener('mouseleave', function () {
+                    playButton.style.transform = 'scale(1)';
+                    hideStopButtonTimeout = setTimeout(() => {
+                        stopButton.style.display = 'none';
+                    }, 3000);
+                });
+
+                // Event listener for mouseenter on stop button
+                stopButton.addEventListener('mouseenter', function () {
+                    if (hideStopButtonTimeout) {
+                        clearTimeout(hideStopButtonTimeout);
+                    }
+                });
+
+                // Event listener for mouseleave on stop button
+                stopButton.addEventListener('mouseleave', function () {
+                    hideStopButtonTimeout = setTimeout(() => {
+                        stopButton.style.display = 'none';
+                    }, 3000);
+                });
+
+                // Event listener to stop audio and reset to beginning
+                stopButton.onclick = function () {
+                    playAudio(bookId, true); // Pass the reset flag to reset the audio
+                    stopButton.style.display = 'none'; // Hide the stop button when clicked
+                };
+
+                playButton.onclick = function () {
+                    playAudio(bookId, false, playButton); // Pass the playButton to toggle icon
+                };
+
+                container.appendChild(playButton);
+                container.appendChild(stopButton);
+            }
+
+            function calculateBookNumber(bookId) {
+                // Define a mapping of bookId to bookNumber
+                const bookNumberMap = {
+                    'Gen': '01',
+                    'Exo': '02',
+                    'Lev': '03',
+                    'Num': '04',
+                    'Deu': '05',
+                    'Jos': '06',
+                    'Jud': '07',
+                    'Rut': '08',
+                    '1Sa': '09',
+                    '2Sa': '10',
+                    '1Ki': '11',
+                    '2Ki': '12',
+                    '1Ch': '13',
+                    '2Ch': '14',
+                    'Ezr': '15',
+                    'Neh': '16',
+                    'Est': '17',
+                    'Job': '18',
+                    'Psa': '19',
+                    'Pro': '20',
+                    'Ecc': '21',
+                    'Son': '22',
+                    'Isa': '23',
+                    'Jer': '24',
+                    'Lam': '25',
+                    'Eze': '26',
+                    'Dan': '27',
+                    'Hos': '28',
+                    'Joe': '29',
+                    'Amo': '30',
+                    'Oba': '31',
+                    'Jon': '32',
+                    'Mic': '33',
+                    'Nah': '34',
+                    'Hab': '35',
+                    'Zep': '36',
+                    'Hag': '37',
+                    'Zec': '38',
+                    'Mal': '39',
+                    'Mat': '40',
+                    'Mar': '41',
+                    'Luk': '42',
+                    'Joh': '43',
+                    'Act': '44',
+                    'Rom': '45',
+                    '1Co': '46',
+                    '2Co': '47',
+                    'Gal': '48',
+                    'Eph': '49',
+                    'Phi': '50',
+                    'Col': '51',
+                    '1Th': '52',
+                    '2Th': '53',
+                    '1Ti': '54',
+                    '2Ti': '55',
+                    'Tit': '56',
+                    'Phm': '57',
+                    'Heb': '58',
+                    'Jam': '59',
+                    '1Pe': '60',
+                    '2Pe': '61',
+                    '1Jo': '62',
+                    '2Jo': '63',
+                    '3Jo': '64',
+                    'Jud': '65',
+                    'Rev': '66'
+                };
+
+                // Convert the bookId to uppercase to ensure case-insensitive matching
+                const upperCaseBookId = bookId.charAt(0).toUpperCase() + bookId.slice(1).toLowerCase();
+
+                // Look up the bookNumber from the map
+                let bookNumber = '00';
+                for (const abbreviation in bookNumberMap) {
+                    if (upperCaseBookId.includes(abbreviation)) {
+                        bookNumber = bookNumberMap[abbreviation];
+                        break;
+                    }
+                }
+
+                return bookNumber;
+            }
+
+            let currentAudio = null; // To keep track of the current audio element
+            let currentPlayButton = null; // To keep track of the current play button
+
+            function playAudio(bookId, reset = false, playButton = null) {
+                const bookNumber = calculateBookNumber(bookId);
+                const chapterNumber = bookId.split('_')[1];
+                const audioUrl = `https://openbible.com/audio/souer/BSB_${bookNumber}_${bookId}.mp3`;
+
+                if (currentAudio) {
+                    if (currentAudio.src === audioUrl) {
+                        if (reset) {
+                            currentAudio.pause();
+                            currentAudio.currentTime = 0;
+                            currentPlayButton.innerHTML = '<i class="fas fa-play"></i>';
+                            currentAudio = null;
+                            currentPlayButton = null;
+                        } else {
+                            if (currentAudio.paused) {
+                                currentAudio.play();
+                                currentPlayButton.innerHTML = '<i class="fas fa-pause"></i>';
+                            } else {
+                                currentAudio.pause();
+                                currentPlayButton.innerHTML = '<i class="fas fa-play"></i>';
+                            }
+                        }
+                        return;
+                    } else {
+                        currentAudio.pause();
+                        currentAudio.currentTime = 0;
+                        currentPlayButton.innerHTML = '<i class="fas fa-play"></i>';
+                    }
+                }
+
+                currentAudio = new Audio(audioUrl);
+                currentPlayButton = playButton;
+
+                currentAudio.play();
+                currentPlayButton.innerHTML = '<i class="fas fa-pause"></i>';
+
+                currentAudio.addEventListener('ended', function () {
+                    currentPlayButton.innerHTML = '<i class="fas fa-play"></i>';
+                    currentAudio = null;
+                    currentPlayButton = null;
+                });
+            }
+
+            function isTitle(line) {
+                const normalTitlePattern = /^[A-Za-z]+\s\d+\s[A-Za-z]/.test(line);
+                const numericTitlePattern = /^\d+\s[A-Za-z]+\s\d+\s/.test(line);
+                const complexTitlePattern = /^[A-Za-z\s]+\s\d+\s[A-Za-z]/.test(line);
+
+                return normalTitlePattern || numericTitlePattern || complexTitlePattern;
+            }
+
+            // Function to set a cookie
+            function setCookie(name, value, days) {
+                const d = new Date();
+                d.setTime(d.getTime() + (days * 24 * 60 * 60 * 1000));
+                const expires = "expires=" + d.toUTCString();
+                document.cookie = name + "=" + value + ";" + expires + ";path=/";
+            }
+
+            // Function to get a cookie
+            function getCookie(name) {
+                const cname = name + "=";
+                const decodedCookie = decodeURIComponent(document.cookie);
+                const ca = decodedCookie.split(';');
+                for (let i = 0; i < ca.length; i++) {
+                    let c = ca[i];
+                    while (c.charAt(0) === ' ') {
+                        c = c.substring(1);
+                    }
+                    if (c.indexOf(cname) === 0) {
+                        return c.substring(cname.length, c.length);
+                    }
+                }
+                return "";
+            }
+
+            // Modified zoom function
+            function zoom(action) {
+                const bibleContent = document.getElementById('bible-content');
+                const zoomInput = document.getElementById('zoom-input');
+                const currentScale = parseFloat(zoomInput.value) / 100;
+                const scaleFactor = action === 'in' ? 1.1 : 0.9;
+                const newScale = currentScale * scaleFactor;
+
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+
+                bibleContent.style.transform = `scale(${newScale})`;
+
+                window.scrollTo(0, scrollTop * newScale / currentScale);
+
+                zoomInput.value = `${Math.round(newScale * 100)}%`;
+                setTransformOrigin(bibleContent);
+
+                // Save zoom level to cookie
+                setCookie('zoomLevel', newScale, 30); // Save for 30 days
+            }
+
+            // Modified changeZoom function
+            function changeZoom() {
+                const bibleContent = document.getElementById('bible-content');
+                const zoomInput = document.getElementById('zoom-input');
+                const newScale = parseFloat(zoomInput.value) / 100;
+
+                const scrollTop = window.scrollY || document.documentElement.scrollTop;
+                const currentScale = parseFloat(bibleContent.style.transform.replace(/[^0-9.]/g, '')) || 1;
+
+                window.scrollTo(0, scrollTop * newScale / currentScale);
+
+                bibleContent.style.transform = `scale(${newScale})`;
+                setTransformOrigin(bibleContent);
+
+                // Save zoom level to cookie
+                setCookie('zoomLevel', newScale, 30); // Save for 30 days
+            }
+
+            // Function to initialize zoom level from cookie
+            function initializeZoom() {
+                const savedZoom = getCookie('zoomLevel');
+                if (savedZoom) {
+                    const bibleContent = document.getElementById('bible-content');
+                    const zoomInput = document.getElementById('zoom-input');
+
+                    bibleContent.style.transform = `scale(${savedZoom})`;
+                    zoomInput.value = `${Math.round(savedZoom * 100)}%`;
+                    setTransformOrigin(bibleContent);
+                }
+            }
+
+            // Call initializeZoom when the page loads
+            document.addEventListener('DOMContentLoaded', initializeZoom);
+
+            function setTransformOrigin(element) {
+                element.style.transformOrigin = 'center top';
+            }
+
+            function toggleDoubleSpacing() {
+                const bibleContent = document.getElementById('bible-content');
+                const doubleSpacing = document.getElementById('doubleSpacing').checked;
+
+                const scrollPercentage = (window.scrollY || document.documentElement.scrollTop) / (document.documentElement.scrollHeight - window.innerHeight);
+
+                bibleContent.style.lineHeight = doubleSpacing ? '2' : '1.6';
+
+                const newScrollTop = scrollPercentage * (document.documentElement.scrollHeight - window.innerHeight);
+                window.scrollTo(0, newScrollTop);
+
+                setTransformOrigin(bibleContent);
+            }
+
+            function toggleTOCMenu() {
+                const mainMenu = document.querySelector('.TOCmain-menu');
+                mainMenu.classList.toggle('open');
+            }
+        </script>
+</body>
+
+</html>
