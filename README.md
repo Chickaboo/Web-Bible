@@ -1,2 +1,4 @@
 # Web-Bible
-This is a Pure HTML, CSS and JS Bible app in the web.
+This is a Pure HTML, CSS, and JS Bible app on the web.
+# Notice
+You can use the app here: https://www.irongripministries.org/Bible/. I have had issues running the HTML file. If the HTML file alone is not working you can deploy it on localhost or a web-server if you have one.
